@@ -129,6 +129,22 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     )
 })
 
+
+const getAllUsers = asyncHandler(async (req, res) => {
+    const logedInUserId = req.user._id
+    const allUsers = await User.find({ _id: { $ne: logedInUserId } })
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            {
+                users: !allUsers.length ? "No User found" : allUsers
+            },
+            "All users fetched succeessfully."
+        )
+    )
+})
+
 const verifyEmail = asyncHandler(async (req, res) => {
     const { id, emailVerificationToken } = req.params
     if (!emailVerificationToken) throw new ApiError(401, "No email verification token")
@@ -381,6 +397,7 @@ export {
     loginUser,
     logoutUser,
     getCurrentUser,
+    getAllUsers,
     verifyEmail,
     resendEmailVerification,
     forgotPasswordRequest,
