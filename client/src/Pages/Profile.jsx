@@ -5,7 +5,7 @@ import { Camera, Mail, User, UserRoundPen } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify'
 const Profile = () => {
   const navigate = useNavigate()
-  const { authUser, resendEmailVerificationToken, resendEmailVerificationTokenResData, resendEmailVerificationTokenReqStatus: { isSuccess, isError, error }, isVerifying } = useAuthStore();
+  const { getCurrentUser, authUser, resendEmailVerificationToken, resendEmailVerificationTokenResData, resendEmailVerificationTokenReqStatus: { isSuccess, isError, error }, isVerifying } = useAuthStore();
   const currentUser = authUser?.data?.user
 
   const resendVerifyLink = () => {
@@ -13,35 +13,11 @@ const Profile = () => {
     resendEmailVerificationToken()
   }
 
-  useEffect(() => {
-    if (isSuccess && resendEmailVerificationTokenResData?.message) {
-      console.log(resendEmailVerificationTokenResData.message)
-      toast.success(resendEmailVerificationTokenResData.message, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    }
 
-    if (isError && error) {
-      console.log(error)
-      toast.error(error, {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-    }
-  }, [resendEmailVerificationTokenResData, isSuccess, isError, error])
+  useEffect(() => {
+    getCurrentUser()
+  }, [])
+
 
   return (
     <div className="lg:h-[80%] pt-2">

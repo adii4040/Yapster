@@ -4,7 +4,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User, Ghost } from "lu
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import AuthImagePattern from "../Components/AuthImagePattern";
-
+import {resetReqStatus} from '../utils/ResetReqStatus'
 const SignUp = () => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +15,7 @@ const SignUp = () => {
     avatar: ""
   });
 
-  const { registerUser, isSigningUp, registerUserStatus: { isSuccess, isError, error, }, registerResData } = useAuthStore();
+  const { registerUser, isSigningUp, registerUserReqStatus: { isSuccess, isError, error, }, registerResData } = useAuthStore();
 
 
   const handleChange = (e) => {
@@ -36,15 +36,7 @@ const SignUp = () => {
     formDataObj.append("password", formData.password)
     formDataObj.append("avatar", formData.avatar)
 
-    useAuthStore.setState((state) => ({
-      registerUserStatus: {
-        ...state.registerUserStatus,
-        isSuccess: false,
-        isError: false,
-        error: null,
-      },
-    }));
-
+    resetReqStatus("registerUser")
     registerUser(formDataObj)
   };
 

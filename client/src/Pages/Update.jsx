@@ -4,10 +4,11 @@ import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User, Ghost } from "lu
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import AuthImagePattern from "../Components/AuthImagePattern";
+import { resetReqStatus } from "../utils/ResetReqStatus";
 
 const Update = () => {
   const navigate = useNavigate()
-  const {userId} = useParams()
+  const { userId } = useParams()
 
   const [formData, setFormData] = useState({
     fullname: "",
@@ -15,7 +16,7 @@ const Update = () => {
     avatar: ""
   });
 
-  const { updateUser, isUpdatingProfile, updateUserReqStatus: { isSuccess, isError, error, }, authUser, updateUserResData } = useAuthStore();
+  const { updateUser, isUpdatingProfile, updateUserReqStatus: { isSuccess, isError, error, }, updateUserResData } = useAuthStore();
 
 
   const handleChange = (e) => {
@@ -27,6 +28,7 @@ const Update = () => {
     }
   }
 
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -35,20 +37,17 @@ const Update = () => {
     formDataObj.append("email", formData.email)
     formDataObj.append("avatar", formData.avatar)
 
-    useAuthStore.setState((state) => ({
-      updateUserReqStatus: {
-        ...state.updateUserReqStatus,
-        isSuccess: false,
-        isError: false,
-        error: null,
-      },
-    }));
-
-    updateUser({formData: formDataObj, userId})
+    resetReqStatus("updateUser")
+    console.log(updateUserResData)
+    updateUser({ formData: formDataObj, userId })
   };
 
   useEffect(() => {
+
+    resetReqStatus("updateUser")
+    
     if (isSuccess && updateUserResData?.message) {
+
       toast.success(updateUserResData.message, {
         position: "top-right",
         autoClose: 5000,
@@ -60,9 +59,10 @@ const Update = () => {
         theme: "dark",
       });
       setTimeout(() => {
-
         navigate(`/user/${userId}/profile`);
       }, 1500);
+
+
     }
 
     if (isError && error) {
@@ -77,8 +77,13 @@ const Update = () => {
         theme: "dark",
       });
     }
-  }, [isSuccess, isError, updateUserResData, error]);
 
+
+  }, [isSuccess, isError, error]);
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <div className="h-screen grid lg:grid-cols-2  ">

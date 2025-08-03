@@ -10,7 +10,7 @@ function VerifyEmail() {
 
     useEffect(() => {
         verifyEmail({userId, emailVerificationToken})
-    }, [])
+    }, [verifyEmail])
 
     if (isVerifying) {
         return (
@@ -20,7 +20,6 @@ function VerifyEmail() {
         )
     }
     if (isSuccess) {
-        getCurrentUser()
         return (
             <div className="h-screen flex items-center justify-center">
                 <p className='text-xl text-green-500'>{verifyEmailResData.message}</p>
@@ -30,7 +29,7 @@ function VerifyEmail() {
     if (isError) {
         return (
             <div className="h-screen flex items-center justify-center">
-                <p className='text-xl text-red-500'>{error}</p>
+                <p className='text-xl text-red-500'>{error?.response?.data?.message}</p>
             </div>
         )
     }

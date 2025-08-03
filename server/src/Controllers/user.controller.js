@@ -58,7 +58,7 @@ const registerUser = asyncHandler(async (req, res) => {
         subject: "Email Verification",
         mailgenContent: emailVerificationMailGen(
             user.fullname,
-            `http://localhost:5174/user/${userId}/verify-email/${hashedToken}`
+            `${process.env.BASE_CLIENT_URL}/user/${userId}/verify-email/${hashedToken}`
         )
     }
     sendMail(mailOptions)
@@ -186,7 +186,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
         subject: "Veriy Your Email",
         mailgenContent: emailVerificationMailGen(
             req.user.fullname,
-            `http://localhost:5174/user/${userId}/verify-email/${hashedToken}`
+            `${process.env.BASE_CLIENT_URL}/user/${userId}/verify-email/${hashedToken}`
         )
     }
 
@@ -217,7 +217,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         subject: "Reset Your Password",
         mailgenContent: forgotPasswordReqMailGen(
             user.fullname,
-            `http://localhost:5174/user/${hashedToken}/reset-forgot-password`
+            `${process.env.BASE_CLIENT_URL}/user/${hashedToken}/reset-forgot-password`
         )
     }
 
@@ -327,7 +327,7 @@ const updateUser = asyncHandler(async (req, res) => {
             subject: "Verify Your Email",
             mailgenContent: emailVerificationMailGen(
                 user.fullname,
-                `http://localhost:5174/user/${userId}/verify-email/${hashedToken}`
+                `${process.env.BASE_CLIENT_URL}/user/${userId}/verify-email/${hashedToken}`
             )
         }
         sendMail(mailOptions)

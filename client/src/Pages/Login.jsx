@@ -4,14 +4,14 @@ import AuthImagePattern from "../Components/AuthImagePattern";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify'
-
+import {resetReqStatus} from '../utils/ResetReqStatus'
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  const { loginUser, isLoggingIn, loginUserStatus: { isSuccess, isError, error }, authUser } = useAuthStore();
+  const { loginUser, isLoggingIn, loginUserReqStatus: { isSuccess, isError, error }, authUser } = useAuthStore();
 
 
   const handleChange = (e) => {
@@ -20,14 +20,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    useAuthStore.setState((state) => ({
-      loginUserStatus: {
-        ...state.loginUserStatus,
-        isSuccess: false,
-        isError: false,
-        error: null
-      }
-    }))
+    resetReqStatus("loginUser")
     loginUser(form);
   };
 

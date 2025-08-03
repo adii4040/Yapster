@@ -3,7 +3,7 @@ import AuthImagePattern from '../Components/AuthImagePattern'
 import { MessageSquare, Mail } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify'
 import { useAuthStore } from '../Store/useAuthStore';
-
+import {resetReqStatus} from '../utils/ResetReqStatus'
 
 function ReqForgetPassword() {
 
@@ -14,14 +14,7 @@ function ReqForgetPassword() {
         e.preventDefault()
         console.log(email)
         console.log(forgetPasswordReqResData)
-        useAuthStore.setState((state) => ({
-            forgetPasswordReqStatus: {
-                ...state.forgetPasswordReqStatus,
-                isSuccess: false,
-                isError: false,
-                error: null
-            }
-        }))
+        resetReqStatus("forgetPassword")
         forgetPasswordRequest({email})
     }
 

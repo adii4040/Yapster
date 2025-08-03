@@ -8,16 +8,16 @@ export const useAuthStore = create((set) => ({
     //currentUser states
     authUser: null,
     isFetchingCurrentUser: true,
-    getCurrentUserStatus: { isSuccess: false, isError: false, error: null },
+    getCurrentUserReqStatus: { isSuccess: false, isError: false, error: null },
 
     //signup user states
     registerResData: null,
     isSigningUp: false,
-    registerUserStatus: { isSuccess: false, isError: false, error: null },
+    registerUserReqStatus: { isSuccess: false, isError: false, error: null },
 
     //login user states
     isLoggingIn: false,
-    loginUserStatus: { isSuccess: false, isError: false, error: null },
+    loginUserReqStatus: { isSuccess: false, isError: false, error: null },
 
     //forgetPasswordReq states
     forgetPasswordReqResData: null,
@@ -49,10 +49,10 @@ export const useAuthStore = create((set) => ({
         try {
             const res = await axiosInstances.get('/user/current-user')
             const data = await res.data
-            set({ getComputedStyle: { isSuccess: true, isError: false, error: null }, authUser: data })
+            set({ getCurrentUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data })
         } catch (error) {
             console.error('Error while fetcing the user', error.response.data)
-            set({ getComputedStyle: { isSuccess: false, isError: true, error: error.response.data }, authUser: null })
+            set({ getCurrentUserReqStatus: { isSuccess: false, isError: true, error: error.response.data }, authUser: null })
 
         } finally {
             set({ isFetchingCurrentUser: false })
@@ -65,11 +65,11 @@ export const useAuthStore = create((set) => ({
             const res = await axiosInstances.post("/user/register", forData)
             const data = await res.data
 
-            set({ registerUserStatus: { isSuccess: true, isError: false, error: null }, registerResData: data })
+            set({ registerUserReqStatus: { isSuccess: true, isError: false, error: null }, registerResData: data })
 
         } catch (error) {
             console.error('Error while registering the user', error?.response?.data?.message)
-            set({ registerUserStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, registerResData: error?.response?.data?.message })
+            set({ registerUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, registerResData: error?.response?.data?.message })
 
         } finally {
             set({ isSigningUp: false })
@@ -81,10 +81,10 @@ export const useAuthStore = create((set) => ({
         try {
             const res = await axiosInstances.post("/user/login", formData)
             const data = await res.data
-            set({ loginUserStatus: { isSuccess: true, isError: false, error: null }, authUser: data })
+            set({ loginUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data })
         } catch (error) {
             console.error('Error while logging in the user', error?.response?.data?.message)
-            set({ loginUserStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, authUser: null })
+            set({ loginUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, authUser: null })
         } finally {
             set({ isLoggingIn: false })
         }
@@ -128,13 +128,15 @@ export const useAuthStore = create((set) => ({
     updateUser: async ({ formData, userId }) => {
         set({ isUpdatingProfile: true })
 
+        console.log("bahar")
         try {
             const res = await axiosInstances.put(`/user/${userId}/update`, formData)
             const data = res.data
-            set({ updateUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data, updateUserResData: data })
+            console.log("updating")
+            set({ updateUserReqStatus: { isSuccess: true, isError: false, error: null }, updateUserResData: data })
         } catch (error) {
             console.error("Error while updating the user", error?.response?.data?.message)
-            set({ updateUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
+            set({ updateUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, updateUserResData: null })
         } finally {
             set({ isUpdatingProfile: false })
         }

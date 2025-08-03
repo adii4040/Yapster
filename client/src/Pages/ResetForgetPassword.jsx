@@ -4,7 +4,7 @@ import AuthImagePattern from "../Components/AuthImagePattern";
 import { useNavigate, useParams } from "react-router-dom";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify'
-
+import {resetReqStatus} from '../utils/ResetReqStatus'
 const ResetForgetPassword = () => {
     const navigate = useNavigate()
     const { resetPasswordToken } = useParams()
@@ -23,15 +23,7 @@ const ResetForgetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        useAuthStore.setState((state) => ({
-            resetForgetPasswordReqStatus: {
-                ...state.resetForgetPasswordReqStatus,
-                isSuccess: false,
-                isError: false,
-                error: null
-            }
-        }))
-        
+        resetReqStatus("resetForgetPassword")
         resetForgetPassword({formData:form, tokenId: resetPasswordToken});
     };
 
