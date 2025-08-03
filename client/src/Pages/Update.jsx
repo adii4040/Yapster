@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User, Ghost } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import AuthImagePattern from "../Components/AuthImagePattern";
 
-const SignUp = () => {
+const Update = () => {
   const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false);
+  const {userId} = useParams()
+
   const [formData, setFormData] = useState({
     fullname: "",
     email: "",
-    password: "",
     avatar: ""
   });
 
-  const { registerUser, isSigningUp, registerUserStatus: { isSuccess, isError, error, }, registerResData } = useAuthStore();
+  const { updateUser, isUpdatingProfile, updateUserReqStatus: { isSuccess, isError, error, }, authUser, updateUserResData } = useAuthStore();
 
 
   const handleChange = (e) => {
@@ -33,24 +33,23 @@ const SignUp = () => {
     const formDataObj = new FormData()
     formDataObj.append("fullname", formData.fullname)
     formDataObj.append("email", formData.email)
-    formDataObj.append("password", formData.password)
     formDataObj.append("avatar", formData.avatar)
 
     useAuthStore.setState((state) => ({
-      registerUserStatus: {
-        ...state.registerUserStatus,
+      updateUserReqStatus: {
+        ...state.updateUserReqStatus,
         isSuccess: false,
         isError: false,
         error: null,
       },
     }));
 
-    registerUser(formDataObj)
+    updateUser({formData: formDataObj, userId})
   };
 
   useEffect(() => {
-    if (isSuccess && registerResData?.message) {
-      toast.success(registerResData.message, {
+    if (isSuccess && updateUserResData?.message) {
+      toast.success(updateUserResData.message, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -62,7 +61,7 @@ const SignUp = () => {
       });
       setTimeout(() => {
 
-        navigate('/login');
+        navigate(`/user/${userId}/profile`);
       }, 1500);
     }
 
@@ -78,11 +77,11 @@ const SignUp = () => {
         theme: "dark",
       });
     }
-  }, [isSuccess, isError, registerResData, error]);
+  }, [isSuccess, isError, updateUserResData, error]);
 
 
   return (
-    <div className="h-screen grid lg:grid-cols-2">
+    <div className="h-screen grid lg:grid-cols-2  ">
       {/* left side */}
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">
         <div className="w-full sm:w-[80%] md:max-w-md mx-auto space-y-5">
@@ -95,8 +94,8 @@ const SignUp = () => {
               >
                 <MessageSquare className="size-5 text-primary" />
               </div>
-              <h1 className="text-2xl font-bold mt-2">Create Account</h1>
-              <p className="text-base-content/60">Get started with your free account</p>
+              <h1 className="text-2xl font-bold mt-2">Update Profile</h1>
+              <p className="text-base-content/60">Make changes to your account information</p>
             </div>
           </div>
 
@@ -114,7 +113,7 @@ const SignUp = () => {
                 <input
                   type="text"
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="John Doe"
+                  placeholder="New Name"
                   name="fullname"
                   value={formData.fullname}
                   onChange={handleChange}
@@ -133,42 +132,11 @@ const SignUp = () => {
                 <input
                   type="email"
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="you@example.com"
+                  placeholder="new@example.com"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                 />
-              </div>
-            </div>
-
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-base-content/40" />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className={`input input-bordered w-full pl-10`}
-                  placeholder="••••••••"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(prev => !prev)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="size-5 text-base-content/40" />
-                  ) : (
-                    <Eye className="size-5 text-base-content/40" />
-                  )}
-                </button>
               </div>
             </div>
 
@@ -185,35 +153,26 @@ const SignUp = () => {
             </div>
 
             <div className="form-control">
-              <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
-                {isSigningUp ? (
+              <button type="submit" className="btn btn-primary w-full" disabled={isUpdatingProfile}>
+                {isUpdatingProfile ? (
                   <>
                     <Loader2 className="size-5 animate-spin" />
-                    "Creating..."
+                    "Updating..."
                   </>
                 ) : (
-                  "Create Account"
+                  "Update Profile"
                 )}
               </button>
             </div>
           </form>
-
-          <div className="text-center">
-            <p className="text-base-content/60">
-              Already have an account?{" "}
-              <Link to="/login" className="link link-primary">
-                Sign in
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
 
       {/* right side */}
 
       <AuthImagePattern
-        title="Join our community"
-        subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
+        title="Keep your profile up to date"
+        subtitle="Update your information to get the best experience."
       />
 
 
@@ -232,4 +191,4 @@ const SignUp = () => {
     </div>
   );
 };
-export default SignUp;
+export default Update;

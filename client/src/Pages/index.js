@@ -5,6 +5,9 @@ import Settings from './Settings'
 import Profile from './Profile'
 import ReqForgetPassword from './ReqForgetPassword'
 import ResetForgetPassword from './ResetForgetPassword'
+import Update from './Update'
+import VerifyEmail from './VerifyEmail'
+
 
 export {
     Home,
@@ -13,5 +16,7 @@ export {
     Signup,
     Profile,
     ReqForgetPassword,
-    ResetForgetPassword
+    ResetForgetPassword,
+    Update,
+    VerifyEmail
 }

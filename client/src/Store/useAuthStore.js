@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import { axiosInstances } from '../Components/lib/axios'
+import { axiosInstances } from '../lib/axios'
 
 export const useAuthStore = create((set) => ({
-    isUpdatingProfile: false,
+
     isUpdatingPassword: false,
 
     //currentUser states
@@ -29,6 +29,20 @@ export const useAuthStore = create((set) => ({
     isResettingForgetPassword: false,
     resetForgetPasswordReqStatus: { isSuccess: false, isError: false, error: null },
 
+    //updateuser states
+    updateUserResData: null,
+    isUpdatingProfile: false,
+    updateUserReqStatus: { isSuccess: false, isError: false, error: null },
+
+    //VerifyEmail states
+    isVerifying: false,
+    verifyEmailResData: null,
+    verifyEmailReqStatus: { isSuccess: false, isError: false, error: null },
+
+
+    //ResendEmailVerificationToken states
+    resendEmailVerificationTokenResData: null,
+    resendEmailVerificationTokenReqStatus: { isSuccess: false, isError: false, error: null },
 
 
     getCurrentUser: async () => {
@@ -108,6 +122,47 @@ export const useAuthStore = create((set) => ({
             set({ resetForgetPasswordReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, resetForgetPasswordResData: null })
         } finally {
             set({ isResettingForgetPassword: false })
+        }
+    },
+
+    updateUser: async ({ formData, userId }) => {
+        set({ isUpdatingProfile: true })
+
+        try {
+            const res = await axiosInstances.put(`/user/${userId}/update`, formData)
+            const data = res.data
+            set({ updateUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data, updateUserResData: data })
+        } catch (error) {
+            console.error("Error while updating the user", error?.response?.data?.message)
+            set({ updateUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
+        } finally {
+            set({ isUpdatingProfile: false })
+        }
+
+    },
+
+    verifyEmail: async ({ userId, emailVerificationToken }) => {
+        set({ isVerifying: true })
+        try {
+            const res = await axiosInstances.get(`/user/${userId}/verify-email/${emailVerificationToken}`)
+            const data = res.data
+            set({ verifyEmailReqStatus: { isSuccess: true, isError: false, error: null }, verifyEmailResData: data })
+        } catch (error) {
+            console.error("Error while verifying the email", error?.response?.data?.message)
+            set({ updateUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
+        } finally {
+            set({ isVerifying: false })
+        }
+    },
+
+    resendEmailVerificationToken: async () => {
+        try {
+            const res = axiosInstances.post('/user/resend-email-verification')
+            const data = res.data
+            set({ resendEmailVerificationTokenReqStatus: { isSuccess: true, isError: false, error: null }, resendEmailVerificationTokenResData: data })
+        } catch (error) {
+            console.error("Error while sending the email verification link", error)
+            set({ resendEmailVerificationTokenReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
         }
     }
 }))

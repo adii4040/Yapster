@@ -5,9 +5,10 @@ import { LogOut, MessageSquare, Settings, User } from "lucide-react";
 const Navbar = () => {
   const { logoutUser, authUser } = useAuthStore();
 
-  return (
+  const currentUser = authUser?.data?.user
+    return (
     <nav >
-      <div className="container w-full mx-auto px-20 h-16">
+      <div className="container w-full mx-auto px-5 md:px-14 lg:px-20 h-16">
         <div className="flex items-center justify-between h-full">
           <div className="">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-all">
@@ -26,7 +27,7 @@ const Navbar = () => {
 
             {authUser && (
               <>
-                <Link to={"/user/profile"} className={`btn btn-sm gap-2`}>
+                <Link to={`/user/${currentUser?._id}/profile`} className={`btn btn-sm gap-2`}>
                   <User className="size-5" />
                   <span className="hidden sm:inline">Profile</span>
                 </Link>
