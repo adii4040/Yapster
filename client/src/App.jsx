@@ -5,10 +5,12 @@ import { Loader } from 'lucide-react';
 import Layout from './Components/Layout'
 import { Home, Settings, Login, Signup, Profile, ReqForgetPassword, ResetForgetPassword, Update, VerifyEmail } from './Pages/index'
 import { useAuthStore } from './Store/useAuthStore'
+import { useThemeStore } from './Store/useThemeStore'
 
 function App() {
   const { authUser, getCurrentUser, isFetchingCurrentUser } = useAuthStore()
- // console.log(authUser?.data?.user)
+  const {theme} = useThemeStore()
+  // console.log(authUser?.data?.user)
   useEffect(() => {
     getCurrentUser()
   }, [getCurrentUser])
@@ -23,24 +25,26 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route path='/' element={<Layout />}>
+      <div data-theme={theme}>
+        <Routes>
+          <Route path='/' element={<Layout />}>
 
-        {/*----Secured Routes----*/ }
-          <Route path='/' element={authUser ? <Home /> : <Navigate to={'/login'} />} />
-          <Route path='/user/:userId/profile' element={authUser ? <Profile /> : <Navigate to={'/login'} />} />
-          <Route path='/user/settings' element={authUser ? <Settings /> : <Navigate to={'/login'} />} />
-          <Route path='/user/:userId/update' element={authUser ? <Update /> : <Navigate to={'/login'} />} />
+            {/*----Secured Routes----*/}
+            <Route path='/' element={authUser ? <Home /> : <Navigate to={'/login'} />} />
+            <Route path='/user/:userId/profile' element={authUser ? <Profile /> : <Navigate to={'/login'} />} />
+            <Route path='/user/settings' element={<Settings />} />
+            <Route path='/user/:userId/update' element={authUser ? <Update /> : <Navigate to={'/login'} />} />
 
-          <Route path='/user/:userId/verify-email/:emailVerificationToken' element={  <VerifyEmail />} />
+            <Route path='/user/:userId/verify-email/:emailVerificationToken' element={<VerifyEmail />} />
 
-          <Route path='/login' element={!authUser ? <Login /> : <Navigate to={'/'} />} />
-          <Route path='/signup' element={!authUser ? <Signup /> : <Navigate to={'/'} />} />
-          <Route path='/user/request-forgot-password' element={!authUser ? <ReqForgetPassword /> : <Navigate to={'/'} />} />
-          <Route path='/user/:resetPasswordToken/reset-forgot-password' element={!authUser ? <ResetForgetPassword /> : <Navigate to={'/'} />} />
+            <Route path='/login' element={!authUser ? <Login /> : <Navigate to={'/'} />} />
+            <Route path='/signup' element={!authUser ? <Signup /> : <Navigate to={'/'} />} />
+            <Route path='/user/request-forgot-password' element={!authUser ? <ReqForgetPassword /> : <Navigate to={'/'} />} />
+            <Route path='/user/:resetPasswordToken/reset-forgot-password' element={!authUser ? <ResetForgetPassword /> : <Navigate to={'/'} />} />
 
-        </Route>
-      </Routes>
+          </Route>
+        </Routes>
+      </div>
 
     </>
   )
