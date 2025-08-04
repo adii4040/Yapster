@@ -70,6 +70,8 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 const getMessage = asyncHandler(async (req, res) => {
     const { receiverId } = req.params
+    const receiver = await User.findById(receiverId)
+    if(!receiver) throw new ApiError(404, "No receiver found!")
     const myId = req.user._id
     const messages = await Message.find({
         $or: [
@@ -82,7 +84,7 @@ const getMessage = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {
-                    messages: "You have no conversation with this user."
+                    messages: `You have no conversation with ${receiver.fullname}.`
                 }
             )
         )
