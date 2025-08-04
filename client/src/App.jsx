@@ -17,7 +17,7 @@ function App() {
 
   if (isFetchingCurrentUser && !authUser) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center" data-theme={theme}>
         <Loader size={28} className="animate-spin" />
       </div>
     )

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify'
 import AuthImagePattern from "../Components/AuthImagePattern";
 import {resetReqStatus} from '../utils/ResetReqStatus'
+
 const SignUp = () => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false);

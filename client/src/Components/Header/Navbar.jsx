@@ -8,7 +8,7 @@ const Navbar = () => {
   const currentUser = authUser?.data?.user
     return (
     <nav >
-      <div className="container w-full mx-auto px-5 md:px-14 lg:px-20 h-16">
+      <div className="w-full px-5 sm:px-10 md:px-14 lg:px-20 h-16">
         <div className="flex items-center justify-between h-full">
           <div className="">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-all">
@@ -34,7 +34,7 @@ const Navbar = () => {
 
                 <button className="flex gap-2 items-center" onClick={logoutUser}>
                   <LogOut className="size-5" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="hidden md:inline">Logout</span>
                 </button>
               </>
             )}

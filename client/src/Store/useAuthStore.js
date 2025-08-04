@@ -4,7 +4,7 @@ import { axiosInstances } from '../lib/axios'
 export const useAuthStore = create((set) => ({
 
     isUpdatingPassword: false,
-
+    onlineUsers: [],
     //currentUser states
     authUser: null,
     isFetchingCurrentUser: true,
@@ -44,6 +44,12 @@ export const useAuthStore = create((set) => ({
     resendEmailVerificationTokenResData: null,
     resendEmailVerificationTokenReqStatus: { isSuccess: false, isError: false, error: null },
 
+
+    //GetAllUsers states
+    allUserResData: [],
+    isFetchingUser: false,
+    allUserReqStatus: { isSuccess: false, isError: false, error: null },
+    
 
     getCurrentUser: async () => {
         try {
@@ -164,7 +170,21 @@ export const useAuthStore = create((set) => ({
             set({ resendEmailVerificationTokenReqStatus: { isSuccess: true, isError: false, error: null }, resendEmailVerificationTokenResData: data })
         } catch (error) {
             console.error("Error while sending the email verification link", error)
-            set({ resendEmailVerificationTokenReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
+            set({ resendEmailVerificationTokenReqStatus: { isSuccess: false, isError: true, error: error } })
+        }
+    },
+
+    getAllUser: async () => {
+        set({isFetchingUser: true})
+        try {
+            const res = await axiosInstances.get("/user/all-users")
+            const data = res.data
+            set({allUserReqStatus: { isSuccess: true, isError: false, error: null }, allUserResData: data})
+        } catch (error) {
+            console.error("Error while fetching the all users", error)
+            set({allUserReqStatus: { isSuccess: false, isError: true, error: error }, allUserResData: null})
+        } finally {
+            set({isFetchingUser: false})
         }
     }
 }))
