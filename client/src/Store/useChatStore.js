@@ -25,12 +25,13 @@ export const useChatStore = create((set) => ({
             const data = res.data
             set({ messagesResStatus: { isSuccess: true, isError: false, error: null }, messagesReqData: data })
         } catch (error) {
-            console.error("Error in fetching the messages", error)
-            set({ messageResStatus: { isSuccess: false, isError: true, error: error }, messagesReqData: null })
+            console.error("Error in fetching the messages", error.response.data)
+            set({ messagesResStatus: { isSuccess: false, isError: true, error: error.response.data.message }, messagesReqData: null })
         } finally {
             set({ isMessageLoading: false })
         }
     },
+
     selectUser: (user) => {
         set({ selectedUser: user })
     },

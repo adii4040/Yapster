@@ -19,6 +19,7 @@ function MessageInput() {
   const [imagePreview, setImagePreview] = useState(null);
   const [videoPreview, setVideoPreview] = useState(null)
 
+  console.log(form)
   const setFileReader = (file) => {
     const reader = new FileReader()
     reader.onloadend = () => {

@@ -51,7 +51,7 @@ const sendMessage = asyncHandler(async (req, res) => {
         attachments: {
             image: sharedImg?.url,
             video: sharedVideos?.url,
-            file: sharedFiles?.url
+            file: sharedFiles?.secure_url
         }
     })
 
@@ -74,17 +74,8 @@ const getMessage = asyncHandler(async (req, res) => {
             { senderId: myId, receiverId },
             { senderId: receiverId, receiverId: myId }
         ]
-    })
-    if (!messages.length) {
-        return res.status(200).json(
-            new ApiResponse(
-                200,
-                {
-                    messages: `You have no conversation with ${receiver.fullname}.`
-                }
-            )
-        )
-    }
+    }).populate("senderId", "fullname avatar").populate("receiverId", "fullname avatar")
+    if (!messages.length) throw new ApiError(404, `You have no conversation with ${receiver.fullname}.`)
 
     return res.status(200).json(
         new ApiResponse(
