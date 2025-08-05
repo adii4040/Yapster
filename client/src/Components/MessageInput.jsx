@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { Paperclip, Image, Folder, Play, Send } from 'lucide-react';
+import { Paperclip, Image, Folder, Play, Send, X, LoaderCircle  } from 'lucide-react';
 import { useChatStore } from '../Store/useChatStore';
 import { resetReqStatus } from '../utils/ResetReqStatus';
 
@@ -16,50 +16,124 @@ function MessageInput() {
     sharedVideos: "",
     sharedFiles: ""
   })
+  const [imagePreview, setImagePreview] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null)
 
+  const setFileReader = (file) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      if (file.type.split("/")[0] === "image") {
+        setImagePreview(reader.result)
+      }
+      if (file.type.split("/")[0] === "video") {
+        setVideoPreview(reader.result)
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  //console.log(form)
   const isFormEmpty =
-  !form.text.trim() &&
-  (!form.sharedFiles || form.sharedFiles.length === 0) &&
-  (!form.sharedImg || form.sharedImg.length === 0) &&
-  (!form.sharedVideos || form.sharedVideos.length === 0);
+    !imagePreview &&
+    !videoPreview &&
+    !form.text.trim() &&
+    !form.sharedFiles &&
+    !form.sharedImg &&
+    !form.sharedVideos;
+
 
   const handleChange = (e) => {
     const { value, files, name } = e.target
 
     if (name === "sharedImg") {
       setForm({ ...form, sharedImg: files[0] })
+      setFileReader(files[0])
     }
     if (name === "sharedVideos") {
       setForm({ ...form, sharedVideos: files[0] })
+      setFileReader(files[0])
     }
     if (name === "sharedFiles") {
       setForm({ ...form, sharedFiles: files[0] })
+      setFileReader(files[0])
     }
     if (name === "text") {
       setForm({ ...form, text: value })
     }
   }
 
+  //console.log(imagePreview, imagePreview?.name)
+
+  const removeImage = () => {
+    setImagePreview(null)
+    setForm(prev => ({ ...prev, sharedImg: "" }))
+  }
+
+  const removeVideo = () => {
+    setVideoPreview(null)
+    setForm(prev => ({ ...prev, sharedVideos: "" }))
+  }
   const handleSubmit = (e) => {
     e.preventDefault()
     const formDataObj = new FormData()
     formDataObj.append("text", form.text)
     formDataObj.append("sharedImg", form.sharedImg)
     formDataObj.append("sharedVideos", form.sharedVideos)
-    formDataObj.append("sharedFiles", form.file)
+    formDataObj.append("sharedFiles", form.sharedFiles)
     resetReqStatus("sendMessage")
     sendMessage({ receiverId: selectedUser?._id, formData: formDataObj })
-    console.log(form)
     setForm({
       text: "",
       sharedImg: "",
       sharedVideos: "",
       sharedFiles: ""
     })
+    setImagePreview(null)
+    setVideoPreview(null)
   }
+
   return (
     <div className='w-full ' >
       <div>
+        {imagePreview && (
+          <div className="mb-3 flex items-center gap-2">
+            <div className="relative">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              />
+              <button
+                onClick={removeImage}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
+              flex items-center justify-center"
+                type="button"
+              >
+                <X className="size-3" />
+              </button>
+            </div>
+          </div>
+        )}
+        {videoPreview && (
+          <div className="mb-3 flex items-center gap-2">
+            <div className="relative">
+              <video
+                autoPlay loop muted
+                src={videoPreview}
+                alt="Preview"
+                className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              />
+              <button
+                onClick={removeVideo}
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
+              flex items-center justify-center"
+                type="button"
+              >
+                <X className="size-3" />
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
       <form className='flex items-center gap-2' onSubmit={handleSubmit}>
@@ -133,8 +207,8 @@ function MessageInput() {
           </ul>
         </div>
 
-        <button type='submit' className='btn btn-sm btn-circle' disabled={isFormEmpty}>
-          <Send size={22} />
+        <button type='submit' className='btn btn-sm btn-circle' disabled={isFormEmpty || isMessageSending}>
+          {isMessageSending ? <LoaderCircle className="animate-spin" /> : <Send size={22} />}
         </button>
       </form>
     </div>

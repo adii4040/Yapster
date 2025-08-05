@@ -14,9 +14,6 @@ function ChatContainer() {
     }, [selectedUser._id, getAllMessages])
 
     const messages = messagesReqData?.data?.messages
-    // messages?.forEach(msg => {
-    //     console.log(msg?.text)
-    // });
     useEffect(() => {
         resetReqStatus("messages")
         if (isSuccess, messagesReqData) {

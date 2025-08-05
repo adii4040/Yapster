@@ -31,20 +31,16 @@ const sendMessage = asyncHandler(async (req, res) => {
             localsharedFilesPath = req.files.sharedFiles[0].path
         }
     }
-    console.log(`image-localpath ${localsharedImgPath}, video-url ${localsharedVideosPath}, file-url ${localsharedFilesPath}`)
-    let sharedImg;
-    let sharedVideos;
-    let sharedFiles;
+    console.log(`image-localpath ${localsharedImgPath}, video-localpath ${localsharedVideosPath}, file-localpath ${localsharedFilesPath}`)
 
-    if (localsharedImgPath) {
-        sharedImg = await uploadOnCloudinary(localsharedImgPath)
-    }
-    if (localsharedVideosPath) {
-        sharedVideos = await uploadOnCloudinary(localsharedVideosPath)
-    }
-    if (localsharedFilesPath) {
-        sharedFiles = await uploadOnCloudinary(localsharedFilesPath)
-    }
+
+    const uploads = await Promise.all([
+        localsharedImgPath && uploadOnCloudinary(localsharedImgPath),
+        localsharedVideosPath && uploadOnCloudinary(localsharedVideosPath),
+        localsharedFilesPath && uploadOnCloudinary(localsharedFilesPath)
+    ]);
+
+    const [sharedImg, sharedVideos, sharedFiles] = uploads;
 
     console.log(`image-url ${sharedImg?.url}, video-url ${sharedVideos?.url}, file-url ${sharedFiles?.url}`)
 
@@ -71,7 +67,7 @@ const sendMessage = asyncHandler(async (req, res) => {
 const getMessage = asyncHandler(async (req, res) => {
     const { receiverId } = req.params
     const receiver = await User.findById(receiverId)
-    if(!receiver) throw new ApiError(404, "No receiver found!")
+    if (!receiver) throw new ApiError(404, "No receiver found!")
     const myId = req.user._id
     const messages = await Message.find({
         $or: [
