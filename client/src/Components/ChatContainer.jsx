@@ -8,19 +8,22 @@ import ChatHeader from './ChatHeader'
 import MessageInput from './MessageInput'
 
 function ChatContainer() {
-    const { getAllMessages, messagesReqData, messagesResStatus: { isSuccess, isError, error }, isMessageLoading, selectedUser } = useChatStore()
+    const { getAllMessages, messagesReqData, messagesResStatus: { isSuccess, isError, error }, isMessageLoading, selectedUser, sendMessageReqData } = useChatStore()
 
 
     const { authUser } = useAuthStore()
     const currentUser = authUser?.data?.user
     const messages = messagesReqData?.data?.messages
-    console.log(messages)
+    //console.log(messages)
 
 
     useEffect(() => {
-        getAllMessages(selectedUser._id)
-        resetReqStatus("messages")
-    }, [selectedUser._id, getAllMessages])
+            resetReqStatus("messages");
+            getAllMessages(selectedUser._id);
+            console.log(sendMessageReqData)
+        
+    }, [selectedUser._id, sendMessageReqData]);
+
 
 
     useEffect(() => {
@@ -69,12 +72,14 @@ function ChatContainer() {
                                     )
                                 }
                                 {
-                                    msg.attachments.videos && (
+                                    msg.attachments.video && (
                                         <video
                                             autoPlay loop muted
                                             src={msg.attachments.video}
 
                                             className='h-80 object-cover rounded-lg p-1' />
+
+                                        
                                     )
                                 }
                                 {
@@ -85,15 +90,8 @@ function ChatContainer() {
                                             title="PDF Viewer"
                                         />
                                     )
-                                }
-                                {
-                                    msg.attachments.file?.endsWith('.docx') && (
-                                        <iframe
-                                            src={`https://docs.google.com/gview?url=${encodeURIComponent(msg.attachments.file)}&embedded=true`}
-                                            className="w-full h-full rounded-lg p-1"
-                                            title="DOCX Viewer"
-                                        />
-                                    )
+
+                                    //NOT SUPPORTING .DOCX FILES AS OF NOW!!
                                 }
                                 {
                                     msg.text && <p>{msg.text}</p>

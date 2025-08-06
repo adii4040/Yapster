@@ -19,7 +19,7 @@ function MessageInput() {
   const [imagePreview, setImagePreview] = useState(null);
   const [videoPreview, setVideoPreview] = useState(null)
 
-  console.log(form)
+  //console.log(form)
   const setFileReader = (file) => {
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -81,7 +81,7 @@ function MessageInput() {
     formDataObj.append("sharedImg", form.sharedImg)
     formDataObj.append("sharedVideos", form.sharedVideos)
     formDataObj.append("sharedFiles", form.sharedFiles)
-    resetReqStatus("sendMessage")
+    //resetReqStatus("sendMessage")
     sendMessage({ receiverId: selectedUser?._id, formData: formDataObj })
     setForm({
       text: "",
