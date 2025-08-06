@@ -1,6 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env' })
 
+import { server } from './socket.js'
 import { app } from './app.js'
 import { connectDb } from './DB/db.js'
 
@@ -13,7 +14,7 @@ connectDb()
             console.log(`Connection err ${err}`)
             throw new Error
         })
-        app.listen(port, () => console.log(`⚙️ Server successfully running on port:${port}`))
+        server.listen(port, () => console.log(`⚙️ Server successfully running on port:${port}`))
     })
     .catch((err) => console.log(`Error connecting database ERROR:${err}`))
 

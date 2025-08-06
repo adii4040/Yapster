@@ -1,10 +1,13 @@
 import { create } from 'zustand'
 import { axiosInstances } from '../lib/axios'
+import { io } from 'socket.io-client'
 
-export const useAuthStore = create((set) => ({
+const baseUrl = import.meta.env.VITE_BASE_URL
+
+export const useAuthStore = create((set, get) => ({
 
     isUpdatingPassword: false,
-    onlineUsers: [],
+
     //currentUser states
     authUser: null,
     isFetchingCurrentUser: true,
@@ -49,13 +52,18 @@ export const useAuthStore = create((set) => ({
     allUserResData: [],
     isFetchingUser: false,
     allUserReqStatus: { isSuccess: false, isError: false, error: null },
-    
+
+    //Socket
+    socket: null,
+    onlineUsers: [],
+
 
     getCurrentUser: async () => {
         try {
             const res = await axiosInstances.get('/user/current-user')
             const data = await res.data
             set({ getCurrentUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data })
+            get().connectSocket()
         } catch (error) {
             console.error('Error while fetcing the user', error.response.data)
             set({ getCurrentUserReqStatus: { isSuccess: false, isError: true, error: error.response.data }, authUser: null })
@@ -72,6 +80,7 @@ export const useAuthStore = create((set) => ({
             const data = await res.data
 
             set({ registerUserReqStatus: { isSuccess: true, isError: false, error: null }, registerResData: data })
+            get().connectSocket()
 
         } catch (error) {
             console.error('Error while registering the user', error?.response?.data?.message)
@@ -88,6 +97,7 @@ export const useAuthStore = create((set) => ({
             const res = await axiosInstances.post("/user/login", formData)
             const data = await res.data
             set({ loginUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data })
+            get().connectSocket()
         } catch (error) {
             console.error('Error while logging in the user', error?.response?.data?.message)
             set({ loginUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message }, authUser: null })
@@ -100,6 +110,7 @@ export const useAuthStore = create((set) => ({
         try {
             const res = await axiosInstances.post("/user/logout")
             set({ authUser: null })
+            get().disconnetSocket()
         } catch (error) {
             set({ loginUserStatus: { isSuccess: true, isError: false, error: error?.response?.data?.message } })
         }
@@ -175,16 +186,30 @@ export const useAuthStore = create((set) => ({
     },
 
     getAllUser: async () => {
-        set({isFetchingUser: true})
+        set({ isFetchingUser: true })
         try {
             const res = await axiosInstances.get("/user/all-users")
             const data = res.data
-            set({allUserReqStatus: { isSuccess: true, isError: false, error: null }, allUserResData: data})
+            set({ allUserReqStatus: { isSuccess: true, isError: false, error: null }, allUserResData: data })
         } catch (error) {
             console.error("Error while fetching the all users", error)
-            set({allUserReqStatus: { isSuccess: false, isError: true, error: error }, allUserResData: null})
+            set({ allUserReqStatus: { isSuccess: false, isError: true, error: error }, allUserResData: null })
         } finally {
-            set({isFetchingUser: false})
+            set({ isFetchingUser: false })
         }
+    },
+
+    connectSocket: () => {
+        const { authUser } = get()
+        if (!authUser || get().socket?.connected) return
+
+        const socket = io(baseUrl)
+        socket.connect()
+
+        set({ socket: socket })
+    },
+
+    disconnetSocket: () => {
+        if (get().socket?.connected) get().socket.disconnect()
     }
 }))
