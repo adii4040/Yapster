@@ -6,6 +6,7 @@ import { useAuthStore } from '../Store/useAuthStore'
 function SideBar({ users }) {
     const { selectUser, selectedUser } = useChatStore()
     const { onlineUsers } = useAuthStore()
+    
     return (
         <div>
             <div className='flex items-center gap-1 p-5 border-b border-base-content/10 '>
@@ -25,7 +26,8 @@ function SideBar({ users }) {
                                 />
                                 {onlineUsers.includes(user._id) && (
                                     <span
-                                        className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full "
+                                        className="absolute bottom-0 right-0 size-3 bg-green-500 
+                  rounded-full ring-2 ring-zinc-900"
                                     />
                                 )}
                             </div>

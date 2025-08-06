@@ -10,7 +10,7 @@ import { useThemeStore } from './Store/useThemeStore'
 function App() {
   const { authUser, getCurrentUser, isFetchingCurrentUser } = useAuthStore()
   const {theme} = useThemeStore()
-  //console.log(authUser?.data?.user)
+  console.log(authUser?.data?.user?._id)
   useEffect(() => {
     getCurrentUser()
   }, [getCurrentUser])
