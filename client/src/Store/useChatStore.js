@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import { axiosInstances } from '../lib/axios'
+import { useAuthStore } from "./useAuthStore";
 
 
-export const useChatStore = create((set) => ({
+export const useChatStore = create((set, get) => ({
 
     selectedUser: null,
 
@@ -12,7 +13,6 @@ export const useChatStore = create((set) => ({
     messagesResStatus: { isSuccess: false, isError: false, error: null },
 
     //sendMessage states
-    sendMessageReqData: null,
     isMessageSending: false,
     sendMessageResStatus: { isSuccess: false, isError: false, error: null },
 
@@ -23,9 +23,10 @@ export const useChatStore = create((set) => ({
         try {
             const res = await axiosInstances.get(`/message/${receiverId}/get-message`)
             const data = res.data
-            set({ messagesResStatus: { isSuccess: true, isError: false, error: null }, messagesReqData: data })
+            console.log(data.data.messages)
+            set({ messagesResStatus: { isSuccess: true, isError: false, error: null }, messagesReqData: Array.isArray(data.data.messages) ? data.data.messages : [] })
         } catch (error) {
-            console.error("Error in fetching the messages", error.response.data)
+            console.error("Error in fetching the messages", error.response.data.message)
             set({ messagesResStatus: { isSuccess: false, isError: true, error: error.response.data.message }, messagesReqData: null })
         } finally {
             set({ isMessageLoading: false })
@@ -41,12 +42,36 @@ export const useChatStore = create((set) => ({
         try {
             const res = await axiosInstances.post(`/message/${receiverId}/send`, formData)
             const data = res.data
-            set({ sendMessageResStatus: { isSuccess: true, isError: false, error: null }, sendMessageReqData: data })
+            console.log(data.data.message)
+            set((state) => ({ sendMessageResStatus: { isSuccess: true, isError: false, error: null }, messagesReqData: [...(state.messagesReqData || []), data.data.message] }))
         } catch (error) {
             console.error("Error in sending the messages", error)
-            set({ sendMessageResStatus: { isSuccess: false, isError: true, error: error }, sendMessageReqData: null })
+            set({ sendMessageResStatus: { isSuccess: false, isError: true, error: error } })
         } finally {
             set({ isMessageSending: false })
         }
+    },
+
+    subscribeToMessage: () => {
+        const { selectedUser } = get()
+        if (!selectedUser) return;
+
+
+        const socket = useAuthStore.getState().socket
+        socket.off("newMessage")
+
+        socket.on("newMessage", (newMessage) => {
+            if (newMessage.senderId._id !== selectedUser._id) return
+
+            set((state) => ({
+                messagesReqData: [...state.messagesReqData, newMessage]
+            }))
+            console.log("📨 New message received via socket:", newMessage);
+        })
+    },
+    unSubscribeFromMessage: () => {
+        const socket = useAuthStore.getState().socket
+        socket.off("newMessage")
     }
+
 })) 

@@ -12,6 +12,10 @@ const io = new Server(server, {
 
 const socketUserMap = {} // {userId: socketId} --- This map will contain all the users that are connected in real time.
 
+const getReceiverSocketId = (userId) => {
+    return socketUserMap[userId]
+}
+
 io.on("connection", (socket) => {
     console.log(`User with id: ${socket.id} connected`)
 
@@ -34,4 +38,4 @@ io.on("connection", (socket) => {
     })
 })
 
-export { io, server }
+export { io, server, getReceiverSocketId }

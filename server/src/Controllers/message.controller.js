@@ -3,7 +3,7 @@ import User from '../Models/User.model.js'
 import Message from '../Models/Message.model.js'
 //Utils
 import { asyncHandler, ApiError, ApiResponse, uploadOnCloudinary } from '../utils/index.js'
-
+import { io, getReceiverSocketId } from '../socket.js'
 
 
 
@@ -55,10 +55,17 @@ const sendMessage = asyncHandler(async (req, res) => {
         }
     })
 
+    const sendMessage = await Message.findById(message._id).populate("senderId", "fullname avatar").populate("receiverId", "fullname avatar")
+    const receiverSocketId = getReceiverSocketId(receiverId)
+    if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessage", sendMessage);
+        console.log(sendMessage)
+    }
+
     return res.status(201).json(
         new ApiResponse(
             201,
-            { message },
+            { message: sendMessage },
             'message sent successfully'
         )
     )

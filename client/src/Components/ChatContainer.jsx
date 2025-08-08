@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Ellipsis } from 'lucide-react'
 
 import { useChatStore } from '../Store/useChatStore'
@@ -8,33 +8,32 @@ import ChatHeader from './ChatHeader'
 import MessageInput from './MessageInput'
 
 function ChatContainer() {
-    const { getAllMessages, messagesReqData, messagesResStatus: { isSuccess, isError, error }, isMessageLoading, selectedUser, sendMessageReqData } = useChatStore()
+    const { getAllMessages, messagesReqData, sendMessageResStatus: { isSuccess }, messagesResStatus: { isError: isGettingMessageError, error: getMessageError }, isMessageLoading, selectedUser, subscribeToMessage, unSubscribeFromMessage, } = useChatStore()
 
 
     const { authUser } = useAuthStore()
     const currentUser = authUser?.data?.user
-    const messages = messagesReqData?.data?.messages
+    const messages = messagesReqData
     //console.log(messages)
 
+    const messageEndRef = useRef(null);
+    useEffect(() => {
+        resetReqStatus("messages");
+        getAllMessages(selectedUser._id);
+        console.log("messages", messagesReqData)
+        subscribeToMessage()
+
+        return () => unSubscribeFromMessage()
+
+    }, [selectedUser._id, isSuccess]);
+
 
     useEffect(() => {
-            resetReqStatus("messages");
-            getAllMessages(selectedUser._id);
-            console.log(sendMessageReqData)
-        
-    }, [selectedUser._id, sendMessageReqData]);
+        if (messageEndRef.current && messagesReqData) {
+            messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messagesReqData]);
 
-
-
-    useEffect(() => {
-        resetReqStatus("messages")
-    }, [isSuccess, isError, error])
-
-    if (isMessageLoading) {
-        <div className="h-screen flex items-center justify-center">
-            <Ellipsis size={32} className="animate-pulse" />
-        </div>
-    }
 
     const formatMessageTime = (date) => {
         return new Date(date).toLocaleTimeString("en-US", {
@@ -44,6 +43,15 @@ function ChatContainer() {
         });
     }
 
+
+    if (isMessageLoading) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <Ellipsis size={32} className="animate-pulse" />
+            </div>
+        )
+    }
+
     return (
         <div className='h-full flex-1 flex flex-col '>
             <div className=''>
@@ -51,8 +59,17 @@ function ChatContainer() {
             </div>
             <div className='flex-1 overflow-y-auto p-5 '>
                 {
-                    messages?.map((msg) => (
-                        <div key={msg._id} className={`chat ${msg.senderId?._id === currentUser?._id ? "chat-end" : "chat-start"}`}>
+                    isGettingMessageError && <div className='animate-pulse h-full text-xl flex items-center justify-center'>{getMessageError}</div>
+                }
+
+
+
+                {
+                      messages?.map((msg) => (
+                        <div
+                            key={msg._id}
+                            className={`chat ${msg.senderId?._id === currentUser?._id ? "chat-end" : "chat-start"}`}
+                            ref={messageEndRef}>
                             <div className="chat-image avatar">
                                 <div className='w-10 rounded-full'>
                                     <img
@@ -79,7 +96,7 @@ function ChatContainer() {
 
                                             className='h-80 object-cover rounded-lg p-1' />
 
-                                        
+
                                     )
                                 }
                                 {
@@ -101,9 +118,8 @@ function ChatContainer() {
                     ))
                 }
 
-                {
-                    isError && <div className='animate-pulse h-full text-xl flex items-center justify-center'>{error}</div>
-                }
+
+
             </div>
 
             <div className=' border-t border-t-base-content/20 p-1'>

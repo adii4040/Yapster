@@ -10,9 +10,11 @@ import { Ellipsis } from 'lucide-react'
 
 function Home() {
   const { getAllUser, isFetchingUser, allUserReqStatus: { isSuccess, isError, error }, allUserResData } = useAuthStore()
-  const { selectedUser } = useChatStore()
+  const { selectedUser, subscribeToMessage, unSubscribeFromMessage } = useChatStore()
+
   useEffect(() => {
     getAllUser()
+    
     resetReqStatus("allUser")
   }, [])
 
@@ -44,7 +46,7 @@ function Home() {
 
         <div className='h-[calc(100vh-64px)] w-full md:w-[70%] '>
           {
-            selectedUser ? <ChatContainer/> : <NoChatContainer/>
+            selectedUser ? <ChatContainer /> : <NoChatContainer />
           }
         </div>
       </div>
