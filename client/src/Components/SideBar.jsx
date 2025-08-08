@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Users } from "lucide-react";
 import { useChatStore } from '../Store/useChatStore'
 import { useAuthStore } from '../Store/useAuthStore'
@@ -6,17 +6,35 @@ import { useAuthStore } from '../Store/useAuthStore'
 function SideBar({ users }) {
     const { selectUser, selectedUser } = useChatStore()
     const { onlineUsers } = useAuthStore()
-    
+
+    const [showOnlineUser, setShowOnlineUser] = useState(false)
+
+    const filteredUser = showOnlineUser ? users.filter((user) => onlineUsers.includes(user._id)) : users
     return (
         <div>
-            <div className='flex items-center gap-1 p-5 border-b border-base-content/10 '>
-                <Users className='size-6' />
-                <span className='font-medium hidden md:block'> Contacts </span>
+            <div className='flex flex-col gap-1 p-5 border-b border-base-content/10 '>
+                <div className='flex'>
+                    <Users className='size-6' />
+                    <span className='font-medium hidden md:block'> Contacts </span>
+                </div>
+
+                <div className="mt-3 hidden md:flex items-center gap-2">
+                    <label className="cursor-pointer flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            checked={showOnlineUser}
+                            onChange={(e) => setShowOnlineUser(e.target.checked)}
+                            className="checkbox checkbox-sm"
+                        />
+                        <span className="text-sm">Show online only</span>
+                    </label>
+                    <span className="text-xs text-zinc-500">({onlineUsers.length - 1} online)</span>
+                </div>
             </div>
 
             <div className='w-full flex flex-col py-3 overflow-auto '>
                 {
-                    users?.map((user) => (
+                    filteredUser?.map((user) => (
                         <button key={user._id} className={`w-full flex items-center  p-3 gap-3   ${selectedUser?._id === user._id ? "bg-base-300 " : "hover:bg-base-300"} transition-colors`} onClick={() => selectUser(user)}>
                             <div className=" w-full md:w-[25%] lg:w-[15%] relative mx-auto lg:mx-0 ">
                                 <img

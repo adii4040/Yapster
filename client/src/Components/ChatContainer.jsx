@@ -53,19 +53,16 @@ function ChatContainer() {
     }
 
     return (
-        <div className='h-full flex-1 flex flex-col '>
+        <div className=' h-full flex-1 flex flex-col '>
             <div className=''>
                 <ChatHeader />
             </div>
-            <div className='flex-1 overflow-y-auto p-5 '>
+            <div className='flex-1 overflow-y-auto p-5'>
                 {
                     isGettingMessageError && <div className='animate-pulse h-full text-xl flex items-center justify-center'>{getMessageError}</div>
                 }
-
-
-
                 {
-                      messages?.map((msg) => (
+                    messages?.map((msg) => (
                         <div
                             key={msg._id}
                             className={`chat ${msg.senderId?._id === currentUser?._id ? "chat-end" : "chat-start"}`}
