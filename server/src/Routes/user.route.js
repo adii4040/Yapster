@@ -7,7 +7,7 @@ import { registerUser, loginUser, logoutUser, getCurrentUser, getAllUsers, verif
 //Middleware
 import { validate, validationSource } from '../Middlewares/validate.middleware.js'
 import uploadAvatar from '../Middlewares/multer.config/avatarUpload.middleware.js'
-import verifyJWT from '../Middlewares/auth.middleware.js'
+import {verifyJWT} from '../Middlewares/auth.middleware.js'
 
 //Validators
 import { emailValidation, registerUserValidation, loginUserValidation, resetPasswordValidation, updateUserValidation } from '../Validators/User.validator.js'

@@ -8,7 +8,7 @@ import ChatHeader from './ChatHeader'
 import MessageInput from './MessageInput'
 
 function ChatContainer() {
-    const { getAllMessages, messagesReqData, sendMessageResStatus: { isSuccess }, messagesResStatus: { isError: isGettingMessageError, error: getMessageError }, isMessageLoading, selectedUser, subscribeToMessage, unSubscribeFromMessage, } = useChatStore()
+    const { getAllMessages, messagesReqData, sendMessageResStatus: { isSuccess, isError: isSendingMessageError, error: sendMessageError }, messagesResStatus: { isError: isGettingMessageError, error: getMessageError }, isMessageLoading, selectedUser, subscribeToMessage, unSubscribeFromMessage, } = useChatStore()
 
 
     const { authUser } = useAuthStore()
@@ -58,6 +58,9 @@ function ChatContainer() {
                 <ChatHeader />
             </div>
             <div className='flex-1 overflow-y-auto p-5'>
+                {
+                    isSendingMessageError && <div className='animate-pulse h-full text-xl flex items-center justify-center'>{sendMessageError}</div>
+                }
                 {
                     isGettingMessageError && <div className='animate-pulse h-full text-xl flex items-center justify-center'>{getMessageError}</div>
                 }

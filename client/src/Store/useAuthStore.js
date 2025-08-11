@@ -65,8 +65,8 @@ export const useAuthStore = create((set, get) => ({
             set({ getCurrentUserReqStatus: { isSuccess: true, isError: false, error: null }, authUser: data })
             get().connectSocket()
         } catch (error) {
-            console.error('Error while fetcing the user', error.response.data)
-            set({ getCurrentUserReqStatus: { isSuccess: false, isError: true, error: error.response.data }, authUser: null })
+            console.error('Error while fetcing the user', error?.response?.data)
+            set({ getCurrentUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data }, authUser: null })
 
         } finally {
             set({ isFetchingCurrentUser: false })

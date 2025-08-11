@@ -45,8 +45,8 @@ export const useChatStore = create((set, get) => ({
             console.log(data.data.message)
             set((state) => ({ sendMessageResStatus: { isSuccess: true, isError: false, error: null }, messagesReqData: [...(state.messagesReqData || []), data.data.message] }))
         } catch (error) {
-            console.error("Error in sending the messages", error)
-            set({ sendMessageResStatus: { isSuccess: false, isError: true, error: error } })
+            console.error("Error in sending the messages", error.response.data.message)
+            set({ sendMessageResStatus: { isSuccess: false, isError: true, error: error.response.data.message } })
         } finally {
             set({ isMessageSending: false })
         }
