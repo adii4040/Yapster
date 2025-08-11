@@ -1,7 +1,8 @@
 import Mailgen from 'mailgen'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const sendMail = async (options) => {
     const mailGenerator = new Mailgen({
         theme: 'default',
@@ -14,32 +15,33 @@ const sendMail = async (options) => {
     const emailHtml = mailGenerator.generate(options.mailgenContent);
     const emailText = mailGenerator.generatePlaintext(options.mailgenContent);
 
-    const transporter = nodemailer.createTransport({
-        host: process.env.MAILTRAP_SMTP_HOST,
-        port: process.env.MAILTRAP_SMTP_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: process.env.MAILTRAP_SMTP_USER,
-            pass: process.env.MAILTRAP_SMTP_PASS,
-        },
-    });
 
     const mail = {
-        from: options.from,
+        from: options.from || 'App Assistant <onboarding@resend.dev>', // Will change later when I'll get a domain
         to: options.to,
         subject: options.subject,
-        text: emailText, // plain‑text body
-        html: emailHtml, // HTML body
+        text: emailText, // plain text
+        html: emailHtml  // HTML body
     }
 
     try {
-        await transporter.sendMail(mail);
+        const { data, error } = await resend.emails.send(mail);
+
+        if (error) {
+            console.error('Email sending failed:', error);
+            return { success: false, error };
+        }
+        console.log('Email sent successfully:', data);
+        return { success: true, data };
+
     } catch (error) {
         console.error(
-            "Email service failed silently. Make sure you have provided your MAILTRAP credentials in the .env file",
+            "Email service failed. Make sure you have provided your RESEND_API_KEY in the .env file",
         );
         console.error("Error: ", error);
+        return { success: false, error };
     }
+
 }
 
 
@@ -61,15 +63,15 @@ const emailVerificationMailGen = (fullname, verificationUrl) => {
     }
 };
 
-const forgotPasswordReqMailGen = (fullname,  forgotPasswordUrl) => {
- return {
+const forgotPasswordReqMailGen = (fullname, forgotPasswordUrl) => {
+    return {
         body: {
             name: fullname,
             intro: 'You are receiving this email because we received a password reset request for your account.',
             action: {
                 instructions: 'To reset the password, please click here:',
                 button: {
-                    color: '#22BC66', 
+                    color: '#22BC66',
                     text: 'Reset Password',
                     link: forgotPasswordUrl
                 }

@@ -26,7 +26,7 @@ const Profile = () => {
       resetReqStatus("resendEmailVerificationToken")
     }
     if (isError) {
-      alert("Error")
+      toast.error("Error while sending verification link")
     }
   }, [isError,isSuccess])
 

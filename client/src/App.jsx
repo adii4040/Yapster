@@ -35,7 +35,7 @@ function App() {
             <Route path='/user/settings' element={<Settings />} />
             <Route path='/user/:userId/update' element={authUser ? <Update /> : <Navigate to={'/login'} />} />
 
-            <Route path='/user/:userId/verify-email/:emailVerificationToken' element={<VerifyEmail />} />
+            <Route path='/user/:userId/verify-email/:emailVerificationToken' element={authUser ? <VerifyEmail/> : <Navigate to={'/login'} />} />
 
             <Route path='/login' element={!authUser ? <Login /> : <Navigate to={'/'} />} />
             <Route path='/signup' element={!authUser ? <Signup /> : <Navigate to={'/'} />} />

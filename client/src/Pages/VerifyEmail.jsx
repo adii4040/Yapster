@@ -6,7 +6,7 @@ import { useAuthStore } from '../Store/useAuthStore';
 function VerifyEmail() {
 
     const { userId, emailVerificationToken } = useParams()
-    const { verifyEmail, isVerifying, verifyEmailReqStatus: { isSuccess, isError, error, }, verifyEmailResData, getCurrentUser } = useAuthStore();
+    const { verifyEmail, isVerifying, verifyEmailReqStatus: { isSuccess, isError, error, }, verifyEmailResData} = useAuthStore();
 
     useEffect(() => {
         verifyEmail({userId, emailVerificationToken})
@@ -29,7 +29,7 @@ function VerifyEmail() {
     if (isError) {
         return (
             <div className="h-screen flex items-center justify-center">
-                <p className='text-xl text-red-500'>{error?.response?.data?.message}</p>
+                <p className='text-xl text-red-500'>{error}</p>
             </div>
         )
     }

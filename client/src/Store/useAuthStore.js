@@ -168,7 +168,7 @@ export const useAuthStore = create((set, get) => ({
             set({ verifyEmailReqStatus: { isSuccess: true, isError: false, error: null }, verifyEmailResData: data })
         } catch (error) {
             console.error("Error while verifying the email", error?.response?.data?.message)
-            set({ updateUserReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
+            set({ verifyEmailReqStatus: { isSuccess: false, isError: true, error: error?.response?.data?.message } })
         } finally {
             set({ isVerifying: false })
         }
@@ -176,7 +176,7 @@ export const useAuthStore = create((set, get) => ({
 
     resendEmailVerificationToken: async () => {
         try {
-            const res = axiosInstances.post('/user/resend-email-verification')
+            const res =  axiosInstances.post('/user/resend-email-verification')
             const data = res.data?.message
             console.log(data)
             set({ resendEmailVerificationTokenReqStatus: { isSuccess: true, isError: false, error: null }, resendEmailVerificationTokenResData: data })

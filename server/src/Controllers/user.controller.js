@@ -53,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const userId = user._id.toString()
     const mailOptions = {
-        from: "yapster@gmail.com",
+        from: "App Assistant <onboarding@resend.dev>",
         to: user.email,
         subject: "Email Verification",
         mailgenContent: emailVerificationMailGen(
@@ -61,7 +61,11 @@ const registerUser = asyncHandler(async (req, res) => {
             `${process.env.BASE_CLIENT_URL}/user/${userId}/verify-email/${hashedToken}`
         )
     }
-    sendMail(mailOptions)
+    const result = await sendMail(mailOptions);
+
+    if (!result.success) {
+        throw new ApiError(500, "Failed to send verification email");
+    }
 
     return res.status(201).json(
         new ApiResponse(
@@ -181,24 +185,25 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 
     const userId = req.user._id.toString()
     const mailOptions = {
-        from: "yapster@gmail.com",
+        from: "App Assistant <onboarding@resend.dev>",
         to: req.user.email,
-        subject: "Veriy Your Email",
+        subject: "Verify Your Email",
         mailgenContent: emailVerificationMailGen(
             req.user.fullname,
             `${process.env.BASE_CLIENT_URL}/user/${userId}/verify-email/${hashedToken}`
         )
     }
 
-    sendMail(mailOptions)
+    const result = await sendMail(mailOptions)
+    if (!result.success)
 
-    return res.status(200).json(
-        new ApiResponse(
-            200,
-            {},
-            "Email verification code sent successfully!"
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                {},
+                "Email verification code sent successfully!"
+            )
         )
-    )
 })
 
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
@@ -212,7 +217,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
     await user.save({ validateBeforeSave: false })
 
     const mailOptions = {
-        from: "yapster@gmail.com",
+        from: "App Assistant <onboarding@resend.dev>",
         to: user.email,
         subject: "Reset Your Password",
         mailgenContent: forgotPasswordReqMailGen(
@@ -221,7 +226,11 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         )
     }
 
-    sendMail(mailOptions)
+    const result = await sendMail(mailOptions);
+
+    if (!result.success) {
+        throw new ApiError(500, "Failed to send verification email");
+    }
 
 
     return res
@@ -287,7 +296,7 @@ const resetCurrentPassword = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
     const { id } = req.params
-    
+
     if (id !== req.user._id.toString()) throw new ApiError(403, "Unauthorized request!!")
 
     const { fullname, email } = req.body
@@ -303,12 +312,12 @@ const updateUser = asyncHandler(async (req, res) => {
 
     if (email) {
 
-        user.email = email
-
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             throw new ApiError(409, "Email already exists!!")
         }
+
+        user.email = email
         // If the email is changed, reset the email verification status and generate a new token
         user.isEmailVerified = false
         user.emailVerificationToken = undefined
@@ -322,7 +331,7 @@ const updateUser = asyncHandler(async (req, res) => {
         await user.save({ validateBeforeSave: false })
         const userId = user._id.toString()
         const mailOptions = {
-            from: "yapster@gmail.com",
+            from: "App Assistant <onboarding@resend.dev>",
             to: user.email,
             subject: "Verify Your Email",
             mailgenContent: emailVerificationMailGen(
@@ -330,7 +339,11 @@ const updateUser = asyncHandler(async (req, res) => {
                 `${process.env.BASE_CLIENT_URL}/user/${userId}/verify-email/${hashedToken}`
             )
         }
-        sendMail(mailOptions)
+        const result = await sendMail(mailOptions);
+
+        if (!result.success) {
+            throw new ApiError(500, "Failed to send verification email");
+        }
     }
 
     if (req.file) {
