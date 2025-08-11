@@ -177,7 +177,8 @@ export const useAuthStore = create((set, get) => ({
     resendEmailVerificationToken: async () => {
         try {
             const res = axiosInstances.post('/user/resend-email-verification')
-            const data = res.data
+            const data = res.data?.message
+            console.log(data)
             set({ resendEmailVerificationTokenReqStatus: { isSuccess: true, isError: false, error: null }, resendEmailVerificationTokenResData: data })
         } catch (error) {
             console.error("Error while sending the email verification link", error)

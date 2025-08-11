@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../Store/useAuthStore";
-import { Camera, Mail, User, UserRoundPen } from "lucide-react";
+import { Mail, User, UserRoundPen } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify'
+import {resetReqStatus} from '../utils/ResetReqStatus' 
 const Profile = () => {
   const navigate = useNavigate()
   const { getCurrentUser, authUser, resendEmailVerificationToken, resendEmailVerificationTokenResData, resendEmailVerificationTokenReqStatus: { isSuccess, isError, error }, isVerifying } = useAuthStore();
@@ -11,12 +12,23 @@ const Profile = () => {
   const resendVerifyLink = () => {
     console.log("verify")
     resendEmailVerificationToken()
+    console.log(resendEmailVerificationTokenResData)
   }
 
 
   useEffect(() => {
     getCurrentUser()
   }, [])
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Verification link sent.")
+      resetReqStatus("resendEmailVerificationToken")
+    }
+    if (isError) {
+      alert("Error")
+    }
+  }, [isError,isSuccess])
 
 
   return (
@@ -87,7 +99,7 @@ const Profile = () => {
       </div>
 
       <ToastContainer
-        position="bottom-right"
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}

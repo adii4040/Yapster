@@ -53,6 +53,16 @@ const SignUp = () => {
         progress: undefined,
         theme: "dark",
       });
+      toast.success("Verification link sent.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       setTimeout(() => {
 
         navigate('/login');
@@ -182,7 +192,7 @@ const SignUp = () => {
                 {isSigningUp ? (
                   <>
                     <Loader2 className="size-5 animate-spin" />
-                    "Creating..."
+                    Creating...
                   </>
                 ) : (
                   "Create Account"
