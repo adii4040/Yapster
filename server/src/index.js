@@ -1,11 +1,24 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env' })
 
+import express from 'express'
 import { server } from './socket.js'
 import { app } from './app.js'
 import { connectDb } from './DB/db.js'
+import path from 'path'
 
 const port = process.env.PORT || 8080
+
+const _dirname = path.resolve();
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(_dirname, "../../client/dist")));
+
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(_dirname, "../../client", "dist", "index.html"))
+    })
+}
 
 
 connectDb()
