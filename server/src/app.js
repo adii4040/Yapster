@@ -24,7 +24,7 @@ app.get = function (path, ...handlers) {
 
 // Now apply your middleware
 app.use(cors({
-  origin: process.env.BASE_CLIENT_URL,
+  origin: "http://localhost:5173",
   credentials: true
 }))
 
@@ -42,6 +42,8 @@ import messageRoutes from './Routes/message.route.js'
 app.use('/api/v1/healthcheck', healtCheckRoute)
 app.use('/api/v1/user', userRoutes)
 app.use('/api/v1/message', messageRoutes)
+
+
 
 // Global error handler
 app.use((err, req, res, next) => {
